@@ -20,9 +20,14 @@ func main() {
 
 func foo(ctx context.Context) {
 	println("start::" + time.Now().String())
+	timer := time.NewTimer(10 * time.Second)
 	select {
 	case <-ctx.Done():
-	case <-time.After(10 * time.Second):
+		select {
+		case <-ctx.Done():
+			timer.Stop()
+		case <-timer.C:
+		}
 	}
 	println("finish::" + time.Now().String())
 }
